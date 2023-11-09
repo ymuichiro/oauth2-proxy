@@ -1,0 +1,32 @@
+version: "3"
+services:
+  proxy:
+    image: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./default.conf:/etc/nginx/conf.d/default.conf
+  server:
+    build:
+      context: ./node
+      dockerfile: ./Dockerfile
+  auth:
+    image: quay.io/oauth2-proxy/oauth2-proxy:v7.5.0
+    env_file:
+      - .env.local
+    environment:
+      OAUTH2_PROXY_PROVIDER: oidc
+      OAUTH2_PROXY_REDIRECT_URL: http://localhost/oauth2/callback
+      OAUTH2_PROXY_COOKIE_SECURE: "false"
+      OAUTH2_PROXY_COOKIE_NAME: "auth"
+      OAUTH2_PROXY_EMAIL_DOMAINS: "*"
+      OAUTH2_PROXY_HTTP_ADDRESS: 0.0.0.0:4180
+      OAUTH2_PROXY_UPSTREAMS: http://server:3001/
+      OAUTH2_PROXY_SCOPE: email profile openid
+      OAUTH2_PROXY_SKIP_PROVIDER_BUTTON: true
+      # set Authorization Bearer response header (useful in Nginx auth_request mode)
+      OAUTH2_PROXY_SET_AUTHORIZATION_HEADER: true
+      # set X-Auth-Request-User, X-Auth-Request-Groups, X-Auth-Request-Email and X-Auth-Request-Preferred-Username response headers (useful in Nginx auth_request mode).
+      OAUTH2_PROXY_SET_XAUTHREQUEST: true
+      # pass OAuth access_token to upstream via X-Forwarded-Access-Token header.
+      OAUTH2_PROXY_PASS_ACCESS_TOKEN: true

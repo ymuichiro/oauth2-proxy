@@ -1,0 +1,61 @@
+injectRequestHeaders:
+  - name: X-Forwarded-Groups
+    values:
+      - claim: groups
+  - name: X-Forwarded-User
+    values:
+      - claim: user
+  - name: X-Forwarded-Email
+    values:
+      - claim: email
+  - name: X-Forwarded-Preferred-Username
+    values:
+      - claim: preferred_username
+  - name: X-Forwarded-Access-Token
+    values:
+      - claim: access_token
+  - name: Authorization
+    values:
+      - claim: id_token
+        prefix: "Bearer "
+injectResponseHeaders:
+  - name: X-Auth-Request-User
+    values:
+      - claim: user
+  - name: X-Auth-Request-Email
+    values:
+      - claim: email
+  - name: X-Auth-Request-Preferred-Username
+    values:
+      - claim: preferred_username
+  - name: X-Auth-Request-Groups
+    values:
+      - claim: groups
+  - name: X-Auth-Request-Access-Token
+    values:
+      - claim: access_token
+  - name: Authorization
+    values:
+      - claim: id_token
+        prefix: "Bearer "
+providers:
+  - id: oidc
+    provider: oidc
+    clientID: ******
+    clientSecret: ******
+    code_challenge_method: S256
+    oidcConfig:
+      issuerURL: https://domain.com/
+      audienceClaims: ["aud"]
+      emailClaim: email
+      groupsClaim: groups
+      insecureSkipNonce: true
+      userIDClaim: email
+upstreamConfig:
+  upstreams:
+    - id: httpbin
+      uri: http://server:3001
+      path: /
+server:
+  BindAddress: "0.0.0.0:4180"
+  SecureBindAddress: "-"
