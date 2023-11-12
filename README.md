@@ -1,1 +1,3 @@
-OAuth2-Proxy と nginx を活用して、プロキシ型の OIDC を実現する
+# OAUTH2-PROXY
+
+プロキシ型の認証フロー例を掲載する

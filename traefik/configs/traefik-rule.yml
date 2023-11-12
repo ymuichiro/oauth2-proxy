@@ -1,0 +1,59 @@
+# https://doc.traefik.io/traefik/providers/file/
+# https://github.com/SchemaStore/schemastore/blob/master/src/schemas/json/traefik-v2-file-provider.json
+http:
+  routers:
+    express1:
+      rule: "Host(`localhost`)"
+      service: node
+      middlewares:
+        - oauth-auth
+        - autodetect
+      # tls:
+      #   certResolver: default
+      #   domains:
+      #     - main: "example.com"
+      #       sans:
+      #         - "*.example.com"
+    oauth:
+      rule: "Host(`localhost`) && PathPrefix(`/oauth2/`)"
+      middlewares:
+        - auth-headers
+      service: auth
+      # tls:
+      #   certResolver: default
+      #   domains:
+      #     - main: "example.com"
+      #       sans:
+      #         - "*.example.com"
+  services:
+    node:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: "http://server:3001"
+    auth:
+      loadBalancer:
+        servers:
+          - url: http://auth:4180
+  middlewares:
+    autodetect:
+      contentType:
+        autoDetect: true
+    auth-headers:
+      headers:
+        stsSeconds: 315360000
+        browserXssFilter: true
+        contentTypeNosniff: true
+        forceSTSHeader: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        frameDeny: true
+        # sslRedirect: true
+        # sslHost: example.com
+    oauth-auth:
+      forwardAuth:
+        address: http://auth:4180/
+        trustForwardHeader: true
+        authResponseHeaders:
+          - X-Auth-Request-Access-Token
+          - Authorization

@@ -1,0 +1,24 @@
+# schema: https://doc.traefik.io/traefik/reference/static-configuration/file/
+# docs: https://doc.traefik.io/traefik/routing/entrypoints/
+entryPoints:
+  # 複数指定可能
+  web:
+    address: ":80"
+
+api:
+  insecure: true
+  dashboard: true
+
+providers:
+  file:
+    filename: /etc/traefik/traefik-rule.yml
+
+log:
+  level: INFO
+# certificatesResolvers:
+#   sample:
+#     acme:
+#       email: webmaster@myserver.test
+#       storage: acme.json
+#       httpChallenge:
+#         entryPoint: web

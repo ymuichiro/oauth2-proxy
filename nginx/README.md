@@ -1,0 +1,1 @@
+OAuth2-Proxy と nginx を活用して、プロキシ型の OIDC を実現する
